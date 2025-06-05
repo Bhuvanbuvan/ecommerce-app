@@ -1,5 +1,9 @@
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:ecommerce/features/home_screen/controller.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:get/get.dart';
 
 // Dashboard Screen
 
@@ -35,6 +39,29 @@ class DashboardScreen extends StatelessWidget {
       'rating': 4.2,
     },
   ];
+
+  final List<Map<String, String>> banners = [
+    {
+      'title': 'Super Sale',
+      'subtitle': 'Discount',
+      'offer': 'Up to 50%',
+      'image': 'assets/banner1.jpg',
+    },
+    {
+      'title': 'Mega Deal',
+      'subtitle': 'Today Only',
+      'offer': 'Flat 30%',
+      'image': 'assets/banner2.jpg',
+    },
+    {
+      'title': 'Flash Offer',
+      'subtitle': 'Limited Time',
+      'offer': 'Buy 1 Get 1',
+      'image': 'assets/banner3.jpg',
+    },
+  ];
+
+  DashboardController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -82,62 +109,85 @@ class DashboardScreen extends StatelessWidget {
             SizedBox(height: 24),
 
             // Sale Banner
-            Container(
-              width: double.infinity,
-              padding: EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.orange, Colors.deepOrange],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
+            CarouselSlider(
+              options: CarouselOptions(
+                height: 180,
+                autoPlay: true,
+                enlargeCenterPage: true,
+                viewportFraction: 1.2,
+                autoPlayInterval: Duration(seconds: 3),
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Super Sale',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+              items:
+                  banners.map((banner) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            banner['image']!,
+                            fit: BoxFit.fitWidth,
                           ),
-                        ),
-                        Text(
-                          'Discount',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
-                        Text(
-                          'Up to 50%',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.orange,
-                          ),
-                          child: Text('Shop Now'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Icon(
-                    Icons.shopping_bag_outlined,
-                    size: 80,
-                    color: Colors.white.withOpacity(0.3),
-                  ),
-                ],
-              ),
+                        );
+                        // return Container(
+                        //   width: double.infinity,
+                        //   padding: EdgeInsets.all(24),
+                        //   decoration: BoxDecoration(
+                        //     gradient: LinearGradient(
+                        //       colors: [Colors.orange, Colors.deepOrange],
+                        //       begin: Alignment.centerLeft,
+                        //       end: Alignment.centerRight,
+                        //     ),
+                        //     borderRadius: BorderRadius.circular(16),
+                        //   ),
+                        //   child: Row(
+                        //     children: [
+                        //       Expanded(
+                        //         child: Column(
+                        //           crossAxisAlignment: CrossAxisAlignment.start,
+                        //           children: [
+                        //             Text(
+                        //               banner['title']!,
+                        //               style: TextStyle(
+                        //                 color: Colors.white,
+                        //                 fontSize: 24,
+                        //                 fontWeight: FontWeight.bold,
+                        //               ),
+                        //             ),
+                        //             Text(
+                        //               banner['subtitle']!,
+                        //               style: TextStyle(color: Colors.white, fontSize: 20),
+                        //             ),
+                        //             Text(
+                        //               banner['offer']!,
+                        //               style: TextStyle(
+                        //                 color: Colors.white,
+                        //                 fontSize: 28,
+                        //                 fontWeight: FontWeight.bold,
+                        //               ),
+                        //             ),
+                        //             SizedBox(height: 8),
+                        //             ElevatedButton(
+                        //               onPressed: () {},
+                        //               style: ElevatedButton.styleFrom(
+                        //                 backgroundColor: Colors.white,
+                        //                 foregroundColor: Colors.orange,
+                        //               ),
+                        //               child: Text('Shop Now'),
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //       Icon(
+                        //         Icons.shopping_bag_outlined,
+                        //         size: 80,
+                        //         color: Colors.white.withOpacity(0.3),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // );
+                      },
+                    );
+                  }).toList(),
             ),
             SizedBox(height: 24),
 
@@ -191,92 +241,105 @@ class DashboardScreen extends StatelessWidget {
                   'Special For You',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                TextButton(onPressed: () {}, child: Text('See all')),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/category-products',
+                      arguments: 'Special for You',
+                    );
+                  },
+                  child: Text('See all'),
+                ),
               ],
             ),
             SizedBox(height: 16),
 
             // Featured Products
-            GridView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.75,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: featuredProducts.length,
-              itemBuilder: (context, index) {
-                final product = featuredProducts[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      '/product-details',
-                      arguments: product,
-                    );
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 1,
-                          blurRadius: 5,
-                        ),
-                      ],
+            GetBuilder<DashboardController>(
+              builder: (controller) {
+                return controller.obx(
+                  (products) => GridView.builder(
+                    itemCount: 4,
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.7,
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(12),
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/product-details',
+                            arguments:
+                                product, // Pass the entire Product object
+                          );
+                        },
+
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(12),
+
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                blurRadius: 6,
+                                offset: Offset(0, 2),
                               ),
-                            ),
-                            child: Icon(
-                              Icons.image,
-                              size: 50,
-                              color: Colors.grey[400],
-                            ),
+
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                blurRadius: 6,
+                                offset: Offset(0, -2),
+                              ),
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                blurRadius: 6,
+                                offset: Offset(0, 2),
+                              ),
+
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                blurRadius: 6,
+                                offset: Offset(0, -2),
+                              ),
+                            ],
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(12),
+                          padding: EdgeInsets.all(8),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                product['name'],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                              Expanded(
+                                child: Image.network(
+                                  product.image,
+                                  fit: BoxFit.contain,
                                 ),
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                product.title,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              SizedBox(height: 4),
                               Text(
-                                product['price'],
-                                style: TextStyle(
-                                  color: Colors.orange,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
+                                '\$${product.price.toStringAsFixed(2)}',
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
+                  onLoading: Center(child: CircularProgressIndicator()),
+                  onEmpty: Center(child: Text('No products found')),
+                  onError: (error) => Center(child: Text('Error: $error')),
                 );
               },
             ),

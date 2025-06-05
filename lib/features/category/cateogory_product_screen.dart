@@ -1,5 +1,8 @@
+import 'package:ecommerce/features/home_screen/controller.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+
+import 'package:get/get.dart';
 
 // Category Products Screen
 class CategoryProductsScreen extends StatelessWidget {
@@ -29,10 +32,12 @@ class CategoryProductsScreen extends StatelessWidget {
       'reviews': 88,
     },
   ];
+  DashboardController controller = Get.find();
 
   @override
   Widget build(BuildContext context) {
-    final String categoryName = ModalRoute.of(context)?.settings.arguments as String? ?? 'Products';
+    final String categoryName =
+        ModalRoute.of(context)?.settings.arguments as String? ?? 'Products';
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -58,13 +63,13 @@ class CategoryProductsScreen extends StatelessWidget {
         padding: EdgeInsets.all(16),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.7,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 17,
+          childAspectRatio: 0.65,
         ),
-        itemCount: products.length,
+        itemCount: controller.products.length,
         itemBuilder: (context, index) {
-          final product = products[index];
+          final product = controller.products[index];
           return GestureDetector(
             onTap: () {
               Navigator.pushNamed(
@@ -90,16 +95,13 @@ class CategoryProductsScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     flex: 3,
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                      ),
-                      child: Icon(
-                        Icons.image,
-                        size: 50,
-                        color: Colors.grey[400],
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Image.network(
+                          product.image,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),
@@ -112,7 +114,7 @@ class CategoryProductsScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            product['name'],
+                            product.title,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -124,13 +126,16 @@ class CategoryProductsScreen extends StatelessWidget {
                             children: [
                               Icon(Icons.star, color: Colors.amber, size: 16),
                               Text(
-                                ' ${product['rating']} (${product['reviews']})',
-                                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                ' ${product.rating} (${product.rating})',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
                               ),
                             ],
                           ),
                           Text(
-                            product['price'],
+                            product.price.toString(),
                             style: TextStyle(
                               color: Colors.orange,
                               fontWeight: FontWeight.bold,
@@ -150,4 +155,3 @@ class CategoryProductsScreen extends StatelessWidget {
     );
   }
 }
-

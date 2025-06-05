@@ -1,6 +1,12 @@
+import 'package:ecommerce/features/model/product.dart';
 import 'package:flutter/material.dart';
+import 'package:get/instance_manager.dart';
+import 'package:get/route_manager.dart';
 import 'dart:async';
 
+import 'package:get/utils.dart';
+
+import '../cart_screen/cart_controller.dart';
 
 // Product Details Screen
 class ProductDetailsScreen extends StatefulWidget {
@@ -13,15 +19,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   String selectedColor = 'Black';
   List<String> colors = ['Red', 'Black', 'Blue', 'Brown', 'White'];
 
+  final CartController cartController = Get.find();
+
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> product = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>? ?? 
-    {
-      'name': 'Wireless Headphone',
-      'price': '\$520.00',
-      'rating': 4.5,
-      'reviews': 200,
-    };
+    final Product product =
+        ModalRoute.of(context)!.settings.arguments as Product;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -54,18 +57,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   Container(
                     height: 300,
                     width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                    ),
-                    child: Center(
-                      child: Icon(
-                        Icons.headphones,
-                        size: 120,
-                        color: Colors.orange,
-                      ),
-                    ),
+                    decoration: BoxDecoration(color: Colors.grey[50]),
+                    child: Image.network(product.image),
                   ),
-                  
+
                   Padding(
                     padding: EdgeInsets.all(20),
                     child: Column(
@@ -73,7 +68,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       children: [
                         // Product Title and Price
                         Text(
-                          product['name'],
+                          product.title,
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -81,7 +76,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          product['price'],
+                          product.price.toString(),
                           style: TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -89,7 +84,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                         ),
                         SizedBox(height: 8),
-                        
+
                         // Rating and Reviews
                         Row(
                           children: [
@@ -104,13 +99,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              '${product['rating'] ?? 4.5} (${product['reviews'] ?? 200} Review)',
+                              '${product.rating ?? 4.5} (${product.rating ?? 200} Review)',
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ],
                         ),
                         SizedBox(height: 16),
-                        
+
                         // Seller Info
                         Text(
                           'Seller: Tariqul isalm',
@@ -120,7 +115,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           ),
                         ),
                         SizedBox(height: 20),
-                        
+
                         // Color Selection
                         Text(
                           'Color',
@@ -131,52 +126,56 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ),
                         SizedBox(height: 12),
                         Row(
-                          children: colors.map((color) {
-                            Color colorValue;
-                            switch (color) {
-                              case 'Red':
-                                colorValue = Colors.red;
-                                break;
-                              case 'Black':
-                                colorValue = Colors.black;
-                                break;
-                              case 'Blue':
-                                colorValue = Colors.blue;
-                                break;
-                              case 'Brown':
-                                colorValue = Colors.brown;
-                                break;
-                              case 'White':
-                                colorValue = Colors.grey[300]!;
-                                break;
-                              default:
-                                colorValue = Colors.grey;
-                            }
-                            
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedColor = color;
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.only(right: 12),
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: colorValue,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: selectedColor == color ? Colors.orange : Colors.transparent,
-                                    width: 3,
+                          children:
+                              colors.map((color) {
+                                Color colorValue;
+                                switch (color) {
+                                  case 'Red':
+                                    colorValue = Colors.red;
+                                    break;
+                                  case 'Black':
+                                    colorValue = Colors.black;
+                                    break;
+                                  case 'Blue':
+                                    colorValue = Colors.blue;
+                                    break;
+                                  case 'Brown':
+                                    colorValue = Colors.brown;
+                                    break;
+                                  case 'White':
+                                    colorValue = Colors.grey[300]!;
+                                    break;
+                                  default:
+                                    colorValue = Colors.grey;
+                                }
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedColor = color;
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 12),
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: colorValue,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color:
+                                            selectedColor == color
+                                                ? Colors.orange
+                                                : Colors.transparent,
+                                        width: 3,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
+                                );
+                              }).toList(),
                         ),
                         SizedBox(height: 20),
-                        
+
                         // Tabs
                         DefaultTabController(
                           length: 3,
@@ -200,16 +199,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       padding: EdgeInsets.all(16),
                                       child: Text(
                                         'Lorem ipsum dolor sit amet consectetur. Placerat ut tempor viverra ut mauris non purus vitae mollis tellus. Integer ornare. Purus risus amet sed fermentum. Neque dolor tempor ut mauris egestas nunc.',
-                                        style: TextStyle(color: Colors.grey[600]),
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                        ),
                                       ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.all(16),
-                                      child: Text('Product specifications will be displayed here.'),
+                                      child: Text(
+                                        'Product specifications will be displayed here.',
+                                      ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.all(16),
-                                      child: Text('Customer reviews will be displayed here.'),
+                                      child: Text(
+                                        'Customer reviews will be displayed here.',
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -224,7 +229,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               ),
             ),
           ),
-          
+
           // Bottom Section with Quantity and Add to Cart
           Container(
             padding: EdgeInsets.all(20),
@@ -261,7 +266,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                       Text(
                         quantity.toString(),
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       IconButton(
                         onPressed: () {
@@ -275,17 +283,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ),
                 ),
                 SizedBox(width: 16),
-                
+
                 // Add to Cart Button
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
                       // Add to cart functionality
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Added to cart!'),
-                          backgroundColor: Colors.orange,
-                        ),
+                      cartController.addToCart(product);
+                      Get.snackbar(
+                        "Success",
+                        "Product added to cart!",
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.green,
+                        colorText: Colors.white,
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -298,7 +308,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                     child: Text(
                       'Add to Cart',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
